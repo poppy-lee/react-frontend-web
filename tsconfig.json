@@ -13,5 +13,6 @@
       "@src/*": ["./src/*"]
     },
     "target": "esnext"
-  }
+  },
+  "exclude": ["node_modules"]
 }
