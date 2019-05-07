@@ -71,9 +71,10 @@ webpackConfig.output = {
   publicPath: "/",
 }
 webpackConfig.plugins = [
-  // del-webpack-plugin과 mini-css-extract-plugin 제외
   new CaseSensitivePathsPlugin(),
+  // del-webpack-plugin 사용하지 않음
   new HtmlWebpackPlugin({ template: "./index.html" }),
+  // mini-css-extract-plugin 사용하지 않음
 ]
 webpackConfig.resolve = {
   alias: {
