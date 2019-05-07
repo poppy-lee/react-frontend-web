@@ -1,4 +1,3 @@
-// VS Code의 자동완성 및 lint 설정을 위해서만 사용됩니다.
 {
   "compilerOptions": {
     "allowJs": true,
@@ -14,5 +13,5 @@
     },
     "target": "esnext"
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./assets", "./dist"]
 }

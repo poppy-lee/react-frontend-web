@@ -6,15 +6,17 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
-  entry: [
-    // @babel/polyfill을 포함하는 다양한 방법이 있는데, 아래 글을 읽어보고 적합한 형태로 사용하면 됩니다
-    // https://babeljs.io/docs/en/babel-polyfill
-    "@babel/polyfill",
-    // @babel/polyfill에 포함되지 않은 polyfill들
-    // https://github.com/github/fetch
-    "whatwg-fetch",
-    path.resolve("./src/index.ts"),
-  ],
+  entry: {
+    app: [
+      // @babel/polyfill을 포함하는 다양한 방법이 있는데, 아래 글을 읽어보고 적합한 형태로 사용하면 됩니다
+      // https://babeljs.io/docs/en/babel-polyfill
+      "@babel/polyfill",
+      // @babel/polyfill에 포함되지 않은 polyfill들
+      "whatwg-fetch", // https://github.com/github/fetch
+      "whatwg-url", // https://github.com/jsdom/whatwg-url
+      path.resolve("./src/index.ts"),
+    ],
+  },
   mode: "production",
   module: {
     rules: [
@@ -50,21 +52,40 @@ module.exports = {
       {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
         loader: "file-loader",
-        options: { name: "images/[name].[hash:6].[ext]" },
+        options: { name: "images/image.[hash:6].[ext]" },
       },
       {
         test: [/\.woff2?$/, /\.ttf$/, /\.eot$/, /\.otf$/],
         loader: "file-loader",
-        options: { name: "fonts/[name].[hash:6].[ext]" },
+        options: { name: "fonts/font.[hash:6].[ext]" },
       },
     ],
   },
-  // React.lazy를 사용한 코드 스플릿이 추가되어 chunkhash 사용
-  // 자세한 내용은 webpack output 설정 참고
+  // https://webpack.js.org/plugins/split-chunks-plugin/
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+        },
+        // css 파일을 하나로 묶음
+        // https://github.com/webpack-contrib/mini-css-extract-plugin#extracting-all-css-in-a-single-file
+        styles: {
+          test: /\.css$/,
+          name: "style",
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
+  },
+  // webpack output 설정
   // https://webpack.js.org/configuration/output/
   output: {
-    filename: "scripts/dist.[hash:6].js",
-    chunkFilename: "scripts/dist.[chunkhash:6].js",
+    filename: "scripts/script.[hash:6].js",
+    chunkFilename: "scripts/script.[chunkhash:6].js",
     path: path.resolve("./dist/"),
     publicPath: "/",
   },

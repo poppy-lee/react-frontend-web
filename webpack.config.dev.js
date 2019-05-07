@@ -1,3 +1,5 @@
+const path = require("path")
+
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 
@@ -34,6 +36,9 @@ webpackConfig.module.rules = [
       plugins: [
         ["@babel/plugin-proposal-class-properties", { loose: true }],
         "@babel/plugin-syntax-dynamic-import",
+        // react-hot-loader 사용
+        // https://github.com/gaearon/react-hot-loader
+        "react-hot-loader/babel",
       ],
       presets: [
         ["@babel/preset-env", { targets: { ie: "11" } }],
@@ -42,7 +47,8 @@ webpackConfig.module.rules = [
       ],
     },
   },
-  // mini-css-extract-plugin 대신 style-loader 사용 (hot reload 권장사항)
+  // react-hot-loader: webpack ExtractTextPlugin is not compatible with React Hot Loader
+  // https://github.com/gaearon/react-hot-loader#webpack-extracttextplugin
   {
     test: /\.css$/,
     loaders: ["style-loader", "css-loader"],
@@ -50,18 +56,35 @@ webpackConfig.module.rules = [
   {
     test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
     loader: "file-loader",
-    options: { name: "images/[name].[ext]" },
+    options: { name: "images/image.[name].[ext]" },
   },
   {
     test: [/\.woff2?$/, /\.ttf$/, /\.eot$/, /\.otf$/],
     loader: "file-loader",
-    options: { name: "fonts/[name].[ext]" },
+    options: { name: "fonts/font.[name].[ext]" },
   },
 ]
+webpackConfig.output = {
+  filename: "scripts/script.[name].js",
+  chunkFilename: "scripts/script.[name].js",
+  path: path.resolve("./dist/"),
+  publicPath: "/",
+}
 webpackConfig.plugins = [
   // del-webpack-plugin과 mini-css-extract-plugin 제외
   new CaseSensitivePathsPlugin(),
   new HtmlWebpackPlugin({ template: "./index.html" }),
 ]
+webpackConfig.resolve = {
+  alias: {
+    "@assets": path.resolve("./assets"),
+    "@src": path.resolve("./src"),
+    // 🔥 version of React-DOM
+    // https://github.com/gaearon/react-hot-loader#react--dom
+    // https://github.com/hot-loader/react-dom
+    "react-dom": "@hot-loader/react-dom",
+  },
+  extensions: [".js", ".jsx", ".ts", ".tsx"],
+}
 
 module.exports = webpackConfig
