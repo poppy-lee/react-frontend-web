@@ -8,6 +8,16 @@ const webpackConfig = require("./webpack.config.js")
 
 // webpack-dev-server 설정
 webpackConfig.devServer = {
+  // before: () => {
+  //   http
+  //     .createServer((request, response) => {
+  //       response.writeHead(302, {
+  //         Location: "https://" + request.headers["host"] + request.url,
+  //       })
+  //       response.end()
+  //     })
+  //     .listen(80)
+  // },
   compress: true,
   disableHostCheck: true,
   historyApiFallback: true,
