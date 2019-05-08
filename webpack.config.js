@@ -8,12 +8,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 module.exports = {
   entry: {
     app: [
-      // @babel/polyfill을 포함하는 다양한 방법이 있는데, 아래 글을 읽어보고 적합한 형태로 사용하면 됩니다
-      // https://babeljs.io/docs/en/babel-polyfill
-      "@babel/polyfill",
-      // @babel/polyfill에 포함되지 않은 polyfill들
+      "core-js", // https://github.com/zloirock/core-js
+      "regenerator-runtime/runtime", // https://github.com/facebook/regenerator/tree/master/packages/regenerator-runtime
       "whatwg-fetch", // https://github.com/github/fetch
-      "whatwg-url", // https://github.com/jsdom/whatwg-url
       path.resolve("./src/index.ts"),
     ],
   },
@@ -23,6 +20,7 @@ module.exports = {
       {
         test: /\.(jsx?|tsx?)$/,
         loader: "babel-loader",
+        exclude: { test: /node_modules/ },
         options: {
           plugins: [
             // class constructor 내부가 아니어도 멤버변수의 초기화 및 대입이 가능하게 됩니다
@@ -119,6 +117,10 @@ module.exports = {
     alias: {
       "@assets": path.resolve("./assets"),
       "@src": path.resolve("./src"),
+      // 🔥 version of React-DOM
+      // https://github.com/gaearon/react-hot-loader#react--dom
+      // https://github.com/hot-loader/react-dom
+      "react-dom": "@hot-loader/react-dom",
     },
     // resolve.extensions에 선언된 확장자는 import 할 때 확장자명을 붙이지 않아도 됩니다
     // ex) import Person from "./Person.ts" -> import Person from "./Person"

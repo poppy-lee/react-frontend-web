@@ -32,6 +32,7 @@ webpackConfig.module.rules = [
   {
     test: /\.(jsx?|tsx?)$/,
     loader: "babel-loader",
+    exclude: { test: /node_modules/ },
     options: {
       plugins: [
         ["@babel/plugin-proposal-class-properties", { loose: true }],
@@ -76,16 +77,5 @@ webpackConfig.plugins = [
   new HtmlWebpackPlugin({ template: "./index.html" }),
   // mini-css-extract-plugin 사용하지 않음
 ]
-webpackConfig.resolve = {
-  alias: {
-    "@assets": path.resolve("./assets"),
-    "@src": path.resolve("./src"),
-    // 🔥 version of React-DOM
-    // https://github.com/gaearon/react-hot-loader#react--dom
-    // https://github.com/hot-loader/react-dom
-    "react-dom": "@hot-loader/react-dom",
-  },
-  extensions: [".js", ".jsx", ".ts", ".tsx"],
-}
 
 module.exports = webpackConfig
