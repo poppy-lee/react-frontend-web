@@ -1,6 +1,10 @@
+const fs = require("fs")
 const path = require("path")
 
+const { codeFrameColumns } = require("@babel/code-frame")
+
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin")
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 // webpack.config.js 설정을 불러와서 development 환경에 맞도록 수정합니다
@@ -8,37 +12,22 @@ const webpackConfig = require("./webpack.config.js")
 
 // webpack-dev-server 설정
 webpackConfig.devServer = {
-  // before: () => {
-  //   http
-  //     .createServer((request, response) => {
-  //       response.writeHead(302, {
-  //         Location: "https://" + request.headers["host"] + request.url,
-  //       })
-  //       response.end()
-  //     })
-  //     .listen(80)
-  // },
   compress: true,
   disableHostCheck: true,
   historyApiFallback: true,
   hot: true,
   host: "0.0.0.0",
   port: 8080,
-  // proxy: {
-  //   "/api": {
-  //     target: "http://api.example.com",
-  //     changeOrigin: true,
-  //     secure: false,
-  //     pathRewrite: {
-  //       "^/api": "",
-  //     },
-  //   },
-  // },
 }
 
 webpackConfig.mode = "development" // mode는 development로 설정
 webpackConfig.module.rules = [
-  // webpack.config.js /\.(jsx?|tsx?)$/ 룰과 같음
+  {
+    enforce: "pre",
+    test: /\.(jsx?|tsx?)$/,
+    exclude: { test: /node_modules/ },
+    loader: "eslint-loader",
+  },
   {
     test: /\.(jsx?|tsx?)$/,
     loader: "babel-loader",
@@ -86,6 +75,16 @@ webpackConfig.plugins = [
   // del-webpack-plugin 사용하지 않음
   new HtmlWebpackPlugin({ template: "./index.html" }),
   // mini-css-extract-plugin 사용하지 않음
+  new ForkTsCheckerWebpackPlugin({
+    async: false,
+    formatter: ({ content, file, line, character }) =>
+      `${content}\n` +
+      codeFrameColumns(
+        fs.readFileSync(file, "utf-8"),
+        { start: { line, column: character } },
+        { highlightCode: true }
+      ),
+  }),
 ]
 
 module.exports = webpackConfig

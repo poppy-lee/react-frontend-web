@@ -2,21 +2,23 @@ const path = require("path")
 
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin")
 const DelWebpackPlugin = require("del-webpack-plugin")
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
   entry: {
-    app: [
-      "core-js", // https://github.com/zloirock/core-js
-      "regenerator-runtime/runtime", // https://github.com/facebook/regenerator/tree/master/packages/regenerator-runtime
-      "whatwg-fetch", // https://github.com/github/fetch
-      path.resolve("./src/index.ts"),
-    ],
+    app: path.resolve("./src/index.ts"),
   },
   mode: "production",
   module: {
     rules: [
+      {
+        enforce: "pre",
+        test: /\.(jsx?|tsx?)$/,
+        exclude: { test: /node_modules/ },
+        loader: "eslint-loader",
+      },
       {
         test: /\.(jsx?|tsx?)$/,
         loader: "babel-loader",
@@ -108,6 +110,9 @@ module.exports = {
       filename: "styles/style.[hash:6].css",
       chunkFilename: "styles/style.[chunkhash:6].css",
     }),
+    // typescript 타입 체크 플러그인
+    // https://github.com/Realytics/fork-ts-checker-webpack-plugin
+    new ForkTsCheckerWebpackPlugin({ async: false }),
   ],
   resolve: {
     // alias 규칙을 사용하면 복잡한 상대경로를 사용하지 않아도 됩니다
