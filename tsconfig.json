@@ -11,6 +11,7 @@
       "@assets/*": ["./assets/*"],
       "@src/*": ["./src/*"]
     },
+    "strict": true,
     "target": "esnext"
   },
   "include": ["*.d.ts", "src/**/*.ts", "src/**/*.tsx"],
