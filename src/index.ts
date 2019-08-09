@@ -16,7 +16,6 @@ function createContainerElement(containerId: string): HTMLElement {
 
 function renderApp(containerId: string) {
   const appContainer = createContainerElement(containerId)
-  appContainer.style.height = "100%"
   ReactDOM.render(React.createElement(App), appContainer)
 }
 
