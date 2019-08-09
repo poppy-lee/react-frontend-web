@@ -73,7 +73,7 @@ webpackConfig.output = {
 webpackConfig.plugins = [
   new CaseSensitivePathsPlugin(),
   // del-webpack-plugin 사용하지 않음
-  new HtmlWebpackPlugin({ template: "./index.html" }),
+  new HtmlWebpackPlugin({ template: path.resolve("./src/index.html") }),
   // mini-css-extract-plugin 사용하지 않음
   new ForkTsCheckerWebpackPlugin({
     async: false,
