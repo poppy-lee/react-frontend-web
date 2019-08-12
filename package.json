@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config=./webpack.config.js",
-    "server": "webpack-dev-server --config=./webpack.config.dev.js",
+    "build": "webpack --mode=production",
+    "server": "webpack-dev-server --mode=development",
     "start": "npm run server",
     "lint": "eslint ./ --ext .ts,.tsx"
   },

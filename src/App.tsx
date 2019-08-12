@@ -7,6 +7,8 @@ import "regenerator-runtime/runtime"
 // https://github.com/github/fetch
 import "whatwg-fetch"
 
+import "./App.css"
+
 import React from "react"
 import { hot } from "react-hot-loader/root"
 
