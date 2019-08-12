@@ -46,7 +46,7 @@ module.exports = (env, argv) => {
             name:
               argv.mode === "production"
                 ? "images/image.[hash:6].[ext]"
-                : "images/image.[name].[ext]",
+                : "images/image.[name].[hash:6].[ext]",
           },
         },
         {
@@ -56,7 +56,7 @@ module.exports = (env, argv) => {
             name:
               argv.mode === "production"
                 ? "fonts/font.[hash:6].[ext]"
-                : "fonts/font.[name].[ext]",
+                : "fonts/font.[name].[hash:6].[ext]",
           },
         },
       ],
@@ -87,11 +87,11 @@ module.exports = (env, argv) => {
       filename:
         argv.mode === "production"
           ? "scripts/script.[hash:6].js"
-          : "scripts/script.[name].js",
+          : "scripts/script.[name].[hash:6].js",
       chunkFilename:
         argv.mode === "production"
           ? "scripts/script.[chunkhash:6].js"
-          : "scripts/script.[name].js",
+          : "scripts/script.[name].[chunkhash:6].js",
       path: path.resolve("./dist/"),
       publicPath: "/",
     },
@@ -108,7 +108,9 @@ module.exports = (env, argv) => {
         exclude: ["fonts", "images", "scripts", "styles"],
       }),
       // 지정한 html 파일에 결과물 *.js 파일을 넣어주는 플러그인
-      new HtmlWebpackPlugin({ template: path.resolve("./src/index.html") }),
+      new HtmlWebpackPlugin({
+        template: path.resolve("./src/index.html"),
+      }),
       // mini-css-extract-plugin의 plugin 설정
       // css 파일을 묶어주는 플러그인. extract-text-webpack-plugin에서 css쪽만 분리됨
       // https://github.com/webpack-contrib/mini-css-extract-plugin
