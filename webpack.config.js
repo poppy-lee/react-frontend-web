@@ -166,7 +166,6 @@ module.exports = (env, argv) => {
           !(plugin instanceof DelWebpackPlugin) &&
           !(plugin instanceof MiniCssExtractPlugin)
       )
-
       break
   }
 
