@@ -164,7 +164,7 @@ module.exports = (env, argv) => {
         port: 8080,
       }
       webpackConfig.plugins = webpackConfig.plugins.filter(
-        plugin =>
+        (plugin) =>
           !(plugin instanceof DelWebpackPlugin) &&
           !(plugin instanceof MiniCssExtractPlugin)
       )

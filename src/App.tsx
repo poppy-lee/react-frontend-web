@@ -15,7 +15,7 @@ import { hot } from "react-hot-loader/root"
 import { withRouter, Switch, Route } from "react-router"
 import { BrowserRouter, Link } from "react-router-dom"
 
-const Header = withRouter(props => (
+const Header = withRouter((props) => (
   <nav>
     HEADER
     <ul>
@@ -46,7 +46,7 @@ const Router: React.FunctionComponent = () => (
       <Route exact path="/hello" render={() => <h1>hello world</h1>} />
       <Route
         path="/"
-        render={props => <h1>Not Found: {props.location.pathname}</h1>}
+        render={(props) => <h1>Not Found: {props.location.pathname}</h1>}
       />
     </Switch>
   </BrowserRouter>
