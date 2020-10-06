@@ -1,7 +1,4 @@
-const fs = require("fs")
 const path = require("path")
-
-const { codeFrameColumns } = require("@babel/code-frame")
 
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin")
 const DelWebpackPlugin = require("del-webpack-plugin")
@@ -27,6 +24,7 @@ module.exports = (env, argv) => {
           test: /\.(jsx?|tsx?)$/,
           loader: "babel-loader",
           exclude: { test: /node_modules/ },
+          options: { rootMode: "root" },
         },
         {
           test: /\.css$/,
@@ -120,19 +118,7 @@ module.exports = (env, argv) => {
       }),
       // typescript 타입 체크 플러그인
       // https://github.com/Realytics/fork-ts-checker-webpack-plugin
-      new ForkTsCheckerWebpackPlugin({
-        async: false,
-        formatter:
-          argv.mode === "production"
-            ? "default"
-            : ({ content, file, line, character }) =>
-                `${content}\n` +
-                codeFrameColumns(
-                  fs.readFileSync(file, "utf-8"),
-                  { start: { line, column: character } },
-                  { highlightCode: true }
-                ),
-      }),
+      new ForkTsCheckerWebpackPlugin({ async: false, formatter: "codeframe" }),
     ],
     resolve: {
       // alias 규칙을 사용하면 복잡한 상대경로를 사용하지 않아도 됩니다
