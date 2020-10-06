@@ -1,14 +1,14 @@
 {
   "name": "react-frontend-web",
   "version": "0.0.1",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "build": "webpack --mode=production",
     "server": "webpack-dev-server --mode=development",
     "start": "npm run server",
     "lint": "eslint ./ --ext .ts,.tsx"
   },
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "core-js": "^3.6.5",
     "react": "^16.13.1",
