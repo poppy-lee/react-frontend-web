@@ -17,18 +17,40 @@ module.exports = (env, argv) => {
         {
           enforce: "pre",
           test: /\.(jsx?|tsx?)$/,
-          exclude: { test: /node_modules/ },
+          exclude: /node_modules/,
           loader: "eslint-loader",
         },
         {
           test: /\.(jsx?|tsx?)$/,
           loader: "babel-loader",
-          exclude: { test: /node_modules/ },
-          options: { rootMode: "root" },
+          exclude: /node_modules/,
+          options: {
+            rootMode: "root",
+            plugins: [
+              // class constructor 내부가 아니어도 멤버변수의 초기화 및 대입이 가능하게 됩니다
+              // constructor에서 bind를 해줘야하는 메소드 대신, 멤버변수에 arrow function을 대입하면 bind가 필요 없어집니다
+              // https://babeljs.io/docs/en/next/babel-plugin-proposal-class-properties.html
+              ["@babel/plugin-proposal-class-properties", { loose: true }],
+              // React.lazy를 지원하기 위한 dynamic import 설정
+              // https://reactjs.org/docs/code-splitting.html
+              // https://babeljs.io/docs/en/next/babel-plugin-syntax-dynamic-import.html
+              "@babel/plugin-syntax-dynamic-import",
+              // react-hot-loader 사용
+              // https://github.com/gaearon/react-hot-loader
+              "react-hot-loader/babel",
+            ],
+            presets: [
+              // 최신문법 트랜스파일 범위를 브라우저 버전이나 점유율을 이용하여 결정
+              // https://babeljs.io/docs/en/babel-preset-env
+              ["@babel/preset-env", { targets: { ie: "11" } }],
+              "@babel/preset-typescript", // typescript 변환
+              "@babel/preset-react", // jsx 문법 지원
+            ],
+          },
         },
         {
           test: /\.css$/,
-          loaders: [
+          use: [
             argv.mode === "production"
               ? // mini-css-extract-plugin의 loader 설정
                 // https://github.com/webpack-contrib/mini-css-extract-plugin
@@ -43,8 +65,8 @@ module.exports = (env, argv) => {
           options: {
             name:
               argv.mode === "production"
-                ? "images/image.[hash:6].[ext]"
-                : "images/image.[name].[hash:6].[ext]",
+                ? "images/image.[contenthash:6].[ext]"
+                : "images/image.[name].[contenthash:6].[ext]",
           },
         },
         {
@@ -53,8 +75,8 @@ module.exports = (env, argv) => {
           options: {
             name:
               argv.mode === "production"
-                ? "fonts/font.[hash:6].[ext]"
-                : "fonts/font.[name].[hash:6].[ext]",
+                ? "fonts/font.[contenthash:6].[ext]"
+                : "fonts/font.[name].[contenthash:6].[ext]",
           },
         },
       ],
@@ -84,8 +106,8 @@ module.exports = (env, argv) => {
     output: {
       filename:
         argv.mode === "production"
-          ? "scripts/script.[hash:6].js"
-          : "scripts/script.[name].[hash:6].js",
+          ? "scripts/script.[contenthash:6].js"
+          : "scripts/script.[name].[contenthash:6].js",
       chunkFilename:
         argv.mode === "production"
           ? "scripts/script.[chunkhash:6].js"
@@ -113,7 +135,7 @@ module.exports = (env, argv) => {
       // css 파일을 묶어주는 플러그인. extract-text-webpack-plugin에서 css쪽만 분리됨
       // https://github.com/webpack-contrib/mini-css-extract-plugin
       new MiniCssExtractPlugin({
-        filename: "styles/style.[hash:6].css",
+        filename: "styles/style.[contenthash:6].css",
         chunkFilename: "styles/style.[chunkhash:6].css",
       }),
       // typescript 타입 체크 플러그인
