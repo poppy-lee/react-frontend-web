@@ -42,7 +42,10 @@ module.exports = (env, argv) => {
             presets: [
               // 최신문법 트랜스파일 범위를 브라우저 버전이나 점유율을 이용하여 결정
               // https://babeljs.io/docs/en/babel-preset-env
-              ["@babel/preset-env", { targets: { ie: "11" } }],
+              [
+                "@babel/preset-env",
+                { corejs: 3, useBuiltIns: "entry", targets: { ie: "11" } },
+              ],
               "@babel/preset-typescript", // typescript 변환
               "@babel/preset-react", // jsx 문법 지원
             ],
@@ -106,14 +109,13 @@ module.exports = (env, argv) => {
     output: {
       filename:
         argv.mode === "production"
-          ? "scripts/script.[contenthash:6].js"
-          : "scripts/script.[name].[contenthash:6].js",
+          ? "scripts/script.[hash:6].js"
+          : "scripts/script.[name].[hash:6].js",
       chunkFilename:
         argv.mode === "production"
           ? "scripts/script.[chunkhash:6].js"
           : "scripts/script.[name].[chunkhash:6].js",
       path: path.resolve("./dist/"),
-      publicPath: "/",
     },
     plugins: [
       // import 하는 파일 경로와 실제 파일명이 다르면 에러를 내 주는 플러그인
