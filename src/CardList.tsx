@@ -1,8 +1,8 @@
 import "./CardList.css"
 
-import React, { useRef, useState, useMemo, useEffect } from "react"
+import { useRef, useState, useMemo, useEffect, FunctionComponent } from "react"
 
-const CardListItem: React.FunctionComponent = () => {
+const CardListItem: FunctionComponent = () => {
   const refLI = useRef<HTMLLIElement>(null)
 
   const [width, setWidth] = useState(0)
@@ -50,7 +50,7 @@ const CardListItem: React.FunctionComponent = () => {
   )
 }
 
-const CardList: React.FunctionComponent = () => (
+const CardList: FunctionComponent = () => (
   <ul>
     <CardListItem />
     <CardListItem />

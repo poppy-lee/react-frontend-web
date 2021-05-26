@@ -1,13 +1,11 @@
-// https://github.com/github/fetch
-import "whatwg-fetch"
-
 import "./App.css"
 
-import React from "react"
+import { FunctionComponent, lazy, Suspense } from "react"
 import { hot } from "react-hot-loader/root"
-
 import { withRouter, Switch, Route } from "react-router"
 import { BrowserRouter, Link } from "react-router-dom"
+
+const CardListLazy = lazy(() => import(/*webpackChunkName: "CardList" */ "./CardList"))
 
 const Header = withRouter((props) => (
   <nav>
@@ -18,6 +16,9 @@ const Header = withRouter((props) => (
       </li>
       <li>
         <Link to="/hello">hello</Link>
+      </li>
+      <li>
+        <Link to="/card-list">card-list</Link>
       </li>
       <li>
         <button
@@ -32,20 +33,22 @@ const Header = withRouter((props) => (
   </nav>
 ))
 
-const Router: React.FunctionComponent = () => (
+const Router: FunctionComponent = () => (
   <BrowserRouter>
     <Header />
     <Switch>
       <Route exact path="/" render={() => <h1>ROOT</h1>} />
       <Route exact path="/hello" render={() => <h1>hello world</h1>} />
-      <Route
-        path="/"
-        render={(props) => <h1>Not Found: {props.location.pathname}</h1>}
-      />
+      <Route exact path="/card-list">
+        <Suspense fallback={null}>
+          <CardListLazy />
+        </Suspense>
+      </Route>
+      <Route path="/" render={(props) => <h1>Not Found: {props.location.pathname}</h1>} />
     </Switch>
   </BrowserRouter>
 )
 
-const App: React.FunctionComponent = () => <Router />
+const App: FunctionComponent = () => <Router />
 
 export default hot(App)

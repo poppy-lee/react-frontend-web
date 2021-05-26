@@ -4,11 +4,13 @@
 import "core-js"
 import "regenerator-runtime/runtime"
 
+// https://github.com/github/fetch
+import "whatwg-fetch"
+
 import React from "react"
 import ReactDOM from "react-dom"
 
 import App from "./App"
-import CardList from "./CardList"
 
 function createContainerElement(containerId: string): HTMLElement {
   const oldContainerElement = document.getElementById(containerId)
@@ -23,7 +25,7 @@ function createContainerElement(containerId: string): HTMLElement {
 
 function renderApp(containerId: string) {
   const appContainer = createContainerElement(containerId)
-  ReactDOM.render(React.createElement(CardList), appContainer)
+  ReactDOM.render(React.createElement(App), appContainer)
 }
 
 renderApp("react-app")
