@@ -3,10 +3,10 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
-    "jsx": "react",
-    "module": "esnext",
+    "jsx": "react-jsx", // https://www.typescriptlang.org/tsconfig#jsx
+    "module": "None", // https://www.typescriptlang.org/tsconfig#module
     "moduleResolution": "node",
-    "outDir": "dist/",
+    "outDir": "./dist",
     "paths": {
       "@assets/*": ["./assets/*"],
       "@src/*": ["./src/*"]

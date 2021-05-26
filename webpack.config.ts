@@ -1,13 +1,13 @@
-const path = require("path")
+import * as path from "path"
+import * as webpack from "webpack"
 
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin")
-const DelWebpackPlugin = require("del-webpack-plugin")
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
-module.exports = (env, argv) => {
-  const webpackConfig = {
+export default (env: any, argv: Record<string, string>): webpack.Configuration => {
+  const webpackConfig: webpack.Configuration = {
     entry: {
       app: path.resolve("./src/index.ts"),
     },
@@ -23,14 +23,13 @@ module.exports = (env, argv) => {
         {
           test: /\.(jsx?|tsx?)$/,
           loader: "babel-loader",
-          exclude: /node_modules/,
+          exclude:
+            argv.mode === "development"
+              ? /node_modules/
+              : /node_modules\/(core-js|regenerator-runtime)/,
           options: {
             rootMode: "root",
             plugins: [
-              // class constructor 내부가 아니어도 멤버변수의 초기화 및 대입이 가능하게 됩니다
-              // constructor에서 bind를 해줘야하는 메소드 대신, 멤버변수에 arrow function을 대입하면 bind가 필요 없어집니다
-              // https://babeljs.io/docs/en/next/babel-plugin-proposal-class-properties.html
-              ["@babel/plugin-proposal-class-properties", { loose: true }],
               // React.lazy를 지원하기 위한 dynamic import 설정
               // https://reactjs.org/docs/code-splitting.html
               // https://babeljs.io/docs/en/next/babel-plugin-syntax-dynamic-import.html
@@ -42,12 +41,9 @@ module.exports = (env, argv) => {
             presets: [
               // 최신문법 트랜스파일 범위를 브라우저 버전이나 점유율을 이용하여 결정
               // https://babeljs.io/docs/en/babel-preset-env
-              [
-                "@babel/preset-env",
-                { corejs: 3, useBuiltIns: "entry", targets: { ie: "11" } },
-              ],
+              ["@babel/preset-env", { corejs: 3, useBuiltIns: "entry", targets: { ie: "11" } }],
+              ["@babel/preset-react", { runtime: "automatic" }], // jsx 문법 지원
               "@babel/preset-typescript", // typescript 변환
-              "@babel/preset-react", // jsx 문법 지원
             ],
           },
         },
@@ -109,26 +105,21 @@ module.exports = (env, argv) => {
     output: {
       filename:
         argv.mode === "production"
-          ? "scripts/script.[hash:6].js"
-          : "scripts/script.[name].[hash:6].js",
+          ? "scripts/script.[contenthash:6].js"
+          : "scripts/script.[name].[contenthash:6].js",
       chunkFilename:
         argv.mode === "production"
-          ? "scripts/script.[chunkhash:6].js"
-          : "scripts/script.[name].[chunkhash:6].js",
+          ? "scripts/script.[contenthash:6].js"
+          : "scripts/script.[name].[contenthash:6].js",
       path: path.resolve("./dist/"),
+      // https://webpack.js.org/guides/output-management/#cleaning-up-the-dist-folder
+      clean: true,
     },
     plugins: [
       // import 하는 파일 경로와 실제 파일명이 다르면 에러를 내 주는 플러그인
       // (macOS 파일시스템은 대소문자 구분을 하지 않아서, 작업한 결과물이 다른 파일시스템에서 문제가 생길 수 있다)
       // https://github.com/Urthen/case-sensitive-paths-webpack-plugin
       new CaseSensitivePathsPlugin(),
-      // webpack 실행 시 변경이 있는 파일만 삭제해주는 플러그인
-      // https://github.com/jackypan1989/del-webpack-plugin
-      // * 주의: exclude 설정에 추가되지 않은 하위폴더는 빌드 완료 후 삭제된다 (!)
-      new DelWebpackPlugin({
-        info: true,
-        exclude: ["fonts", "images", "scripts", "styles"],
-      }),
       // 지정한 html 파일에 결과물 *.js 파일을 넣어주는 플러그인
       new HtmlWebpackPlugin({
         template: path.resolve("./src/index.html"),
@@ -138,7 +129,7 @@ module.exports = (env, argv) => {
       // https://github.com/webpack-contrib/mini-css-extract-plugin
       new MiniCssExtractPlugin({
         filename: "styles/style.[contenthash:6].css",
-        chunkFilename: "styles/style.[chunkhash:6].css",
+        chunkFilename: "styles/style.[contenthash:6].css",
       }),
       // typescript 타입 체크 플러그인
       // https://github.com/Realytics/fork-ts-checker-webpack-plugin
@@ -165,20 +156,21 @@ module.exports = (env, argv) => {
 
   switch (argv.mode) {
     case "development":
-      webpackConfig.devServer = {
-        compress: true,
-        disableHostCheck: true,
-        historyApiFallback: true,
-        hot: true,
-        host: "0.0.0.0",
-        port: 8080,
-      }
-      webpackConfig.plugins = webpackConfig.plugins.filter(
-        (plugin) =>
-          !(plugin instanceof DelWebpackPlugin) &&
-          !(plugin instanceof MiniCssExtractPlugin)
-      )
-      break
+      return {
+        ...webpackConfig,
+        devServer: {
+          compress: true,
+          disableHostCheck: true,
+          historyApiFallback: true,
+          hot: true,
+          host: "0.0.0.0",
+          port: 8080,
+        },
+        plugins:
+          webpackConfig.plugins instanceof Array
+            ? webpackConfig.plugins.filter((plugin) => !(plugin instanceof MiniCssExtractPlugin))
+            : undefined,
+      } as webpack.Configuration
   }
 
   return webpackConfig
